@@ -1,0 +1,12 @@
+RoofTop
+
+1. create a bitmap (.bmp) image 24 bit. Can't be greater than 64 width or height
+2. Run the program and open the bitmap with the browse button.
+3. There are 3 color match algorithms you can choose from, favor darker colors, favor lighter colors, or attempt nearest match. Try each one.
+4. The "Original" tab contains the an image of the bitmap that was opened and a list of every possible tile.
+5. The "Generated" tab contains the sample of what the rooftop will look like and a list of all of the tiles selected to take part in the roof.
+6. Click on each tile in the "Generated" list to see where it should be used in the roof top.
+7. The bulk of the program's window contains the arrangement of tiles that should be applied to the roof, use the generated tab list to limit the tiles in the arrangement.
+8. the big arrangement area can be scrolled as needed. 
+9. the program can be maximized to make the arrangement area as big as possible.
+
