@@ -1,0 +1,12 @@
+E:\Programs\RoofTop\bin\Debug\RoofTop.exe.config
+E:\Programs\RoofTop\bin\Debug\RoofTop.exe
+E:\Programs\RoofTop\bin\Debug\RoofTop.pdb
+E:\Programs\RoofTop\bin\Debug\RoofTop.xml
+E:\Programs\RoofTop\obj\Debug\RoofTop.vbprojResolveAssemblyReference.cache
+E:\Programs\RoofTop\obj\Debug\RoofTop.MainWnd.resources
+E:\Programs\RoofTop\obj\Debug\RoofTop.Resources.resources
+E:\Programs\RoofTop\obj\Debug\RoofTop.vbproj.GenerateResource.Cache
+E:\Programs\RoofTop\obj\Debug\RoofTop.vbproj.CoreCompileInputs.cache
+E:\Programs\RoofTop\obj\Debug\RoofTop.exe
+E:\Programs\RoofTop\obj\Debug\RoofTop.xml
+E:\Programs\RoofTop\obj\Debug\RoofTop.pdb
