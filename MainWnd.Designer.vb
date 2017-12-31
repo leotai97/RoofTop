@@ -49,6 +49,7 @@ Partial Class MainWnd
     Me.c4 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
     Me.c5 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
     Me.picGen = New System.Windows.Forms.PictureBox()
+    Me.chkFull = New System.Windows.Forms.CheckBox()
     CType(Me.picOrig, System.ComponentModel.ISupportInitialize).BeginInit()
     Me.Panel1.SuspendLayout()
     CType(Me.picWork, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -262,11 +263,22 @@ Partial Class MainWnd
     Me.picGen.TabIndex = 4
     Me.picGen.TabStop = False
     '
+    'chkFull
+    '
+    Me.chkFull.AutoSize = True
+    Me.chkFull.Location = New System.Drawing.Point(1067, 14)
+    Me.chkFull.Name = "chkFull"
+    Me.chkFull.Size = New System.Drawing.Size(42, 17)
+    Me.chkFull.TabIndex = 16
+    Me.chkFull.Text = "Full"
+    Me.chkFull.UseVisualStyleBackColor = True
+    '
     'MainWnd
     '
     Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
     Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-    Me.ClientSize = New System.Drawing.Size(1121, 700)
+    Me.ClientSize = New System.Drawing.Size(1183, 700)
+    Me.Controls.Add(Me.chkFull)
     Me.Controls.Add(Me.TabControl1)
     Me.Controls.Add(Me.radNearest)
     Me.Controls.Add(Me.radLighter)
@@ -316,4 +328,5 @@ Partial Class MainWnd
   Friend WithEvents c5 As ColumnHeader
   Friend WithEvents cc2 As ColumnHeader
   Friend WithEvents cc3 As ColumnHeader
+  Friend WithEvents chkFull As CheckBox
 End Class

@@ -3,13 +3,17 @@
 Public Class MainWnd
 
   Private m_Panels As List(Of TilePanel)
-  Private m_bitmap As Bitmap
-  Private m_Tiles As List(Of Tile)
-  Private m_Matched(,) As Tile
+  Private m_Roof As Roof
+  Private m_Tiles As Dictionary(Of Integer, Tile)
   Private m_Placeholder As Image
+  Private m_eMethod As Roof.enumMethod
 
   Private m_ID As Integer
 
+  ''' <summary>
+  ''' to give each tile a unique Id
+  ''' </summary>
+  ''' <returns></returns>
   Public Function GetID() As Integer
     m_ID += 1
     Return m_ID
@@ -48,10 +52,10 @@ Public Class MainWnd
     m_Panels.Add(New TilePanel(11, 20, Me, My.Resources.panel11))
     m_Panels.Add(New TilePanel(12, 12, Me, My.Resources.panel12))
 
-    m_Tiles = New List(Of Tile)
+    m_Tiles = New Dictionary(Of Integer, Tile)
     For Each panel In m_Panels
       For Each tile In panel.Tiles
-        m_Tiles.Add(tile)
+        m_Tiles.Add(tile.ID, tile)
         ImageList1.Images.Add("I" & tile.ID, tile.Image)
         lv = New ListViewItem
         s1 = Strings.Right("000" & (CInt(tile.Color.R) + CInt(tile.Color.G) + CInt(tile.Color.B)), 3)
@@ -76,8 +80,8 @@ Public Class MainWnd
         If i < m_Tiles.Count Then
           rctIn = New Rectangle(0, 0, 37, 18)
           rctOut = New Rectangle(x * 37, y * 18, 37, 18)
-          g.DrawImage(m_Tiles.Item(i).Image, rctOut, rctIn, GraphicsUnit.Pixel)
-          br = New SolidBrush(m_Tiles.Item(i).Color)
+          g.DrawImage(m_Tiles.Item(i + 1).Image, rctOut, rctIn, GraphicsUnit.Pixel)
+          br = New SolidBrush(m_Tiles.Item(i + 1).Color)
           g.FillRectangle(br, New Rectangle(x * 37, (18 * 18 + y * 18) + 10, 37, 18))
           br.Dispose()
           i += 1
@@ -91,31 +95,42 @@ Public Class MainWnd
     picWork.Top = 0
     picWork.Left = 0
 
-    m_bitmap = Nothing
+    m_Roof = Nothing
     m_Placeholder = My.Resources.Placeholder
+
+    picGen.SizeMode = PictureBoxSizeMode.StretchImage
 
   End Sub
 
   Private Sub btnBrowse_Click(sender As Object, e As EventArgs) Handles btnBrowse.Click
     Dim d As OpenFileDialog
     Dim r As DialogResult
+    Dim bmp As Bitmap = Nothing
+    Dim blnBad As Boolean ' so we can dispose bmp
 
-    If Not m_bitmap Is Nothing Then m_bitmap.Dispose()
+    If Not m_Roof Is Nothing Then m_Roof.Dispose()
     d = New OpenFileDialog
     r = d.ShowDialog
 
     If r = DialogResult.OK Then
-      m_bitmap = Image.FromFile(d.FileName)
+      bmp = Image.FromFile(d.FileName)
     End If
     d.Dispose()
     If r <> DialogResult.OK Then Return
 
-    If m_bitmap.Width > 64 Then MsgBox("Width of image cannot be greater than 64, it's " & m_bitmap.Width, MsgBoxStyle.Information) : Return
-    If m_bitmap.Height > 64 Then MsgBox("Height of image cannot be greater than 64, it's " & m_bitmap.Height, MsgBoxStyle.Information) : Return
+    blnBad = False
+    If bmp.Width > 64 Then MsgBox("Width of image cannot be greater than 64, it's " & bmp.Width, MsgBoxStyle.Information) : blnBad = True
+    If bmp.Height > 64 Then MsgBox("Height of image cannot be greater than 64, it's " & bmp.Height, MsgBoxStyle.Information) : blnBad = True
+    If blnBad = True Then
+      bmp.Dispose()
+      Return
+    End If
 
     txtFile.Text = d.FileName
 
-    picOrig.Image = m_bitmap
+    m_Roof = New Roof(bmp, m_Placeholder, m_Tiles)
+
+    picOrig.Image = m_Roof.Original
     picOrig.SizeMode = PictureBoxSizeMode.StretchImage
 
     GenerateRoof()
@@ -123,29 +138,24 @@ Public Class MainWnd
   End Sub
 
   Private Sub GenerateRoof()
-    Dim i, k As Integer
+    Dim i As Integer
+    Dim map As Map
     Dim tile As Tile
-    Dim dic As Dictionary(Of Integer, Tile)
     Dim item As TileItem
+    Dim list As New Dictionary(Of Integer, Tile)
 
-    If m_bitmap Is Nothing Then Return
+    If m_Roof Is Nothing Then Return
 
-    ReDim m_Matched(m_bitmap.Height - 1, m_bitmap.Width - 1)
+    m_Roof.GenerateRoof(m_eMethod)
 
-    dic = New Dictionary(Of Integer, Tile)
-
-    For i = 0 To m_bitmap.Width - 1
-      For k = 0 To m_bitmap.Height - 1
-        Tile = GetBestTile(m_bitmap.GetPixel(i, k))
-        m_Matched(k, i) = Tile
-        If dic.ContainsKey(Tile.ID) = False Then dic.Add(Tile.ID, Tile)
-      Next
+    For Each map In m_Roof.Mapping.Values
+      If list.ContainsKey(map.Tile.ID) = False Then list.Add(map.Tile.ID, map.Tile)
     Next
 
     listTiles.Items.Clear()
 
     i = 1
-    For Each tile In dic.Values
+    For Each tile In list.Values
       item = New TileItem(tile, i)
       item.ImageKey = "I" & tile.ID
       listTiles.Items.Add(item)
@@ -157,22 +167,15 @@ Public Class MainWnd
     c3.AutoResize(ColumnHeaderAutoResizeStyle.HeaderSize)
     c4.AutoResize(ColumnHeaderAutoResizeStyle.HeaderSize)
     c5.AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent)
+
     DrawGrid()
 
   End Sub
 
   Private Sub DrawGrid()
-    Dim item As TIleItem
-    Dim x, y As Integer
-    Dim bmp, bmp2 As Bitmap
-    Dim g As Graphics
-    Dim rctIn, rctOut As Rectangle
     Dim current As Dictionary(Of Integer, Tile)
-    Dim blnDraw As Boolean
-
-    bmp = New Bitmap(m_bitmap.Width * 37, m_bitmap.Height * 18, Imaging.PixelFormat.Format24bppRgb)
-    bmp2 = New Bitmap(m_bitmap.Width, m_bitmap.Height, Imaging.PixelFormat.Format24bppRgb)
-    g = Graphics.FromImage(bmp)
+    Dim bmps As GeneratedBitmaps
+    Dim item As TileItem
 
     If listTiles.SelectedItems.Count = 0 Then
       current = Nothing
@@ -185,185 +188,83 @@ Public Class MainWnd
       picTile.Image = item.Tile.Image
     End If
 
-    For i = 0 To m_bitmap.Width - 1
-      For k = 0 To m_bitmap.Height - 1
-        x = i * 37
-        y = k * 18
-        rctOut = New Rectangle(x, y, 37, 18)
-        rctIn = New Rectangle(0, 0, 37, 18)
-        If current Is Nothing Then
-          blnDraw = True
-        Else
-          blnDraw = current.ContainsKey(m_Matched(k, i).ID)
-        End If
-        If blnDraw = True Then
-          g.DrawImage(m_Matched(k, i).Image, rctOut, rctIn, GraphicsUnit.Pixel)
-        Else
-          g.DrawImage(m_placeholder, rctOut, rctIn, GraphicsUnit.Pixel)
-        End If
-        bmp2.SetPixel(i, k, m_Matched(k, i).Color)
-      Next
-    Next
-    g.Dispose()
+    bmps = m_Roof.DrawGrid(current)
+
+    If Not picGen.Image Is Nothing Then picGen.Image.Dispose()
+    picGen.Image = bmps.Small
 
     If Not picWork.Image Is Nothing Then picWork.Image.Dispose()
-    picWork.Image = bmp
-    picWork.SizeMode = PictureBoxSizeMode.AutoSize
+    picWork.Image = bmps.Large
 
-    '  bmp.Save("test.jpg", Imaging.ImageFormat.Jpeg)
-    If Not picGen.Image Is Nothing Then picGen.Image.Dispose()
-    picGen.Image = bmp2
-    picGen.SizeMode = PictureBoxSizeMode.StretchImage
-
+    If chkFull.Checked = True Then
+      picWork.SizeMode = PictureBoxSizeMode.StretchImage
+      picWork.Size = Panel1.ClientSize
+    Else
+      picWork.SizeMode = PictureBoxSizeMode.AutoSize
+    End If
 
   End Sub
+
+  'Dim item As TileItem
+  '  Dim x, y As Integer
+  '  Dim bmp, bmp2 As Bitmap
+  '  Dim g As Graphics
+  '  Dim rctIn, rctOut As Rectangle
+  '  Dim current As Dictionary(Of Integer, Tile)
+  '  Dim blnDraw As Boolean
+
+  '  bmp = New Bitmap(m_bitmap.Width * 37, m_bitmap.Height * 18, Imaging.PixelFormat.Format24bppRgb)
+  '  bmp2 = New Bitmap(m_bitmap.Width, m_bitmap.Height, Imaging.PixelFormat.Format24bppRgb)
+  '  g = Graphics.FromImage(bmp)
+
+  '  If listTiles.SelectedItems.Count = 0 Then
+  '    current = Nothing
+  '  Else
+  '    current = New Dictionary(Of Integer, Tile)
+  '    For Each item In listTiles.SelectedItems
+  '      current.Add(item.Tile.ID, item.Tile)
+  '    Next
+  '    item = listTiles.SelectedItems(0)
+  '    picTile.Image = item.Tile.Image
+  '  End If
+
+  '  For i = 0 To m_bitmap.Width - 1
+  '    For k = 0 To m_bitmap.Height - 1
+  '      x = i * 37
+  '      y = k * 18
+  '      rctOut = New Rectangle(x, y, 37, 18)
+  '      rctIn = New Rectangle(0, 0, 37, 18)
+  '      If current Is Nothing Then
+  '        blnDraw = True
+  '      Else
+  '        blnDraw = current.ContainsKey(m_Matched(k, i).ID)
+  '      End If
+  '      If blnDraw = True Then
+  '        g.DrawImage(m_Matched(k, i).Image, rctOut, rctIn, GraphicsUnit.Pixel)
+  '      Else
+  '        g.DrawImage(m_Placeholder, rctOut, rctIn, GraphicsUnit.Pixel)
+  '      End If
+  '      bmp2.SetPixel(i, k, m_Matched(k, i).Color)
+  '    Next
+  '  Next
+  '  g.Dispose()
+
+  '  If Not picWork.Image Is Nothing Then picWork.Image.Dispose()
+  '  picWork.Image = bmp
+  '  picWork.SizeMode = PictureBoxSizeMode.AutoSize
+
+  '  '  bmp.Save("test.jpg", Imaging.ImageFormat.Jpeg)
+  '  If Not picGen.Image Is Nothing Then picGen.Image.Dispose()
+  '  picGen.Image = bmp2
+  '  picGen.SizeMode = PictureBoxSizeMode.StretchImage
+
+
+  'End Sub
 
   Private Sub listTiles_SelectedIndexChanged(sender As Object, e As EventArgs) Handles listTiles.SelectedIndexChanged
     DrawGrid()
   End Sub
 
-  Private Function GetBestTile(ByVal c As Color) As Tile
-    Dim best As Tile
-
-    best = Nothing
-
-    If radDarker.Checked = True Then
-      best = Darker(c)
-      If Not best Is Nothing Then Return best
-      Return Nearest(c)
-    End If
-
-    If radLighter.Checked = True Then
-      best = Lighter(c)
-      If Not best Is Nothing Then Return best
-      Return Nearest(c)
-    End If
-
-    Return Nearest(c)
-
-  End Function
-
-  Private Function Darker(ByVal c As Color) As Tile
-    Dim tile, best As Tile
-    Dim br, bg, bb As Integer
-    Dim ar, ag, ab As Integer
-
-    best = Nothing
-
-    br = 512
-    bg = 512
-    bb = 512
-
-    For Each tile In m_Tiles
-
-      ar = CInt(c.R) - CInt(tile.Color.R)
-      ag = CInt(c.G) - CInt(tile.Color.G)
-      ab = CInt(c.B) - CInt(tile.Color.B)
-
-      If ar >= 0 And ag >= 0 And ab >= 0 Then   ' find a lower match first
-
-        If ar <= br And ag <= bg And ab <= bb Then
-          best = tile
-          br = ar
-          bg = ag
-          bb = ab
-        End If
-
-      End If
-
-    Next
-
-    Return best
-
-  End Function
-
-  Private Function Lighter(ByVal c As Color) As Tile
-    Dim tile, best As Tile
-    Dim br, bg, bb As Integer
-    Dim ar, ag, ab As Integer
-
-    br = 512
-    bg = 512
-    bb = 512
-
-    best = Nothing
-
-    For Each tile In m_Tiles
-
-      If tile.Color.R > c.R And tile.Color.G > c.G And tile.Color.B > c.B Then
-        If best Is Nothing Then
-          best = tile
-        Else
-          If tile.Color.R < best.Color.R And tile.Color.G < best.Color.G And tile.Color.B < best.Color.B Then
-            best = tile
-          End If
-        End If
-      End If
-
-    Next
-
-    If Not best Is Nothing Then Return best
-
-    For Each tile In m_Tiles
-      If best Is Nothing Then
-        best = tile
-      Else
-        If CInt(tile.Color.R) + CInt(tile.Color.G) + CInt(tile.Color.B) > CInt(best.Color.R) + CInt(best.Color.G) + CInt(best.Color.B) Then best = tile
-      End If
-
-    Next
-
-    Return best
-
-
-    '  ar = CInt(tile.Color.R) - CInt(c.R)
-    '  ag = CInt(tile.Color.G) - CInt(c.G)
-    '  ab = CInt(tile.Color.B) - CInt(c.B)
-
-    '  If ar >= 0 And ag >= 0 And ab >= 0 Then   ' find a higher match first
-
-    '    If ar <= br And ag <= bg And ab <= bb Then
-    '      best = tile
-    '      br = ar
-    '      bg = ag
-    '      bb = ab
-    '    End If
-
-    '  End If
-
-    'Next
-
-    ' Return best
-  End Function
-
-  Private Function Nearest(ByVal c As Color) As Tile
-    Dim tile, best As Tile
-    Dim br, bg, bb As Integer
-    Dim ar, ag, ab As Integer
-
-    br = 512
-    bg = 512
-    bb = 512
-
-    best = Nothing
-
-    For Each tile In m_Tiles
-
-      ar = Math.Abs(CInt(tile.Color.R) - CInt(c.R))
-      ag = Math.Abs(CInt(tile.Color.G) - CInt(c.G))
-      ab = Math.Abs(CInt(tile.Color.B) - CInt(c.B))
-
-      If ar <= br And ag <= bg And ab <= bb Then
-        best = tile
-        br = ar
-        bg = ag
-        bb = ab
-      End If
-
-    Next
-    Return best
-
-  End Function
 
   Private Sub MainWnd_Resize(sender As Object, e As EventArgs) Handles Me.Resize
     Dim w, h As Integer
@@ -380,17 +281,22 @@ Public Class MainWnd
     h = ch - (TabControl1.Top + 10)
     If h > 1 Then TabControl1.Height = h
 
+    If chkFull.Checked = True Then picWork.Size = Panel1.ClientSize
+
   End Sub
 
   Private Sub radDarker_Click(sender As Object, e As EventArgs) Handles radDarker.Click
+    m_eMethod = Roof.enumMethod.Darker
     GenerateRoof()
   End Sub
 
   Private Sub radLighter_Click(sender As Object, e As EventArgs) Handles radLighter.Click
+    m_eMethod = Roof.enumMethod.Lighter
     GenerateRoof()
   End Sub
 
   Private Sub radNearest_Click(sender As Object, e As EventArgs) Handles radNearest.Click
+    m_eMethod = Roof.enumMethod.Best
     GenerateRoof()
   End Sub
 
@@ -408,6 +314,17 @@ Public Class MainWnd
     n = t2.ClientSize.Height - (listTiles.Top + 4)
     If n > 1 Then
       listTiles.Height = n
+    End If
+
+  End Sub
+
+  Private Sub chkFull_Click(sender As Object, e As EventArgs) Handles chkFull.Click
+
+    If chkFull.Checked = True Then
+      picWork.SizeMode = PictureBoxSizeMode.StretchImage
+      picWork.Size = Panel1.ClientSize
+    Else
+      picWork.SizeMode = PictureBoxSizeMode.AutoSize
     End If
 
   End Sub

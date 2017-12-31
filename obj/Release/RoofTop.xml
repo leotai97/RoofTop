@@ -87,5 +87,11 @@ RoofTop
   Looks up a localized resource of type System.Drawing.Bitmap.
 </summary>
 </member>
+<member name="M:RoofTop.MainWnd.GetID">
+ <summary>
+ to give each tile a unique Id
+ </summary>
+ <returns></returns>
+</member>
 </members>
 </doc>

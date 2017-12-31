@@ -9,3 +9,4 @@ E:\Programs\RoofTop\obj\Release\RoofTop.vbproj.CoreCompileInputs.cache
 E:\Programs\RoofTop\obj\Release\RoofTop.exe
 E:\Programs\RoofTop\obj\Release\RoofTop.xml
 E:\Programs\RoofTop\obj\Release\RoofTop.pdb
+E:\Programs\RoofTop\obj\Release\RoofTop.vbprojResolveAssemblyReference.cache

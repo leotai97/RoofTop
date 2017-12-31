@@ -11,9 +11,9 @@
     Dim x, y As Integer
     Dim r, g, b As Long
     Dim c As Color
-    Dim i, m As Integer
+    Dim i As Integer
     Dim dic As New Dictionary(Of Color, ColorItem)
-    Dim item As ColorItem
+    ' Dim item As ColorItem
 
     m_ID = nID
     m_PosX = tx
