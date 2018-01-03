@@ -1,7 +1,7 @@
 ﻿Public Class Tile
 
   Private m_Image As Bitmap
-  Private m_Color As Color
+  Private m_Color As RFColor
   Private m_Panel As TilePanel
   Private m_PosX As Integer
   Private m_posY As Integer
@@ -45,11 +45,11 @@
     '  End If
     'Next
 
-    m_Color = Color.FromArgb(r / i, g / i, b / i)
+    m_Color = New RFColor(Drawing.Color.FromArgb(r / i, g / i, b / i))
 
   End Sub
 
-  Public ReadOnly Property Color() As Color
+  Public ReadOnly Property Color() As RFColor
     Get
       Return m_Color
     End Get

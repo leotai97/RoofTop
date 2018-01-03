@@ -6,11 +6,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{E84177BA-189D-4981-9E75-8589EDDD152E}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <StartupObject>RoofTop.My.MyApplication</StartupObject>
+    <StartupObject>Sub Main</StartupObject>
     <RootNamespace>RoofTop</RootNamespace>
     <AssemblyName>RoofTop</AssemblyName>
     <FileAlignment>512</FileAlignment>
-    <MyType>WindowsForms</MyType>
+    <MyType>WindowsFormsWithCustomSubMain</MyType>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
@@ -95,6 +95,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Roof.vb" />
+    <Compile Include="RoofTopModule.vb" />
     <Compile Include="Tile.vb" />
     <Compile Include="TIleItem.vb" />
     <Compile Include="TilePanel.vb" />

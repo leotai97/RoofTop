@@ -50,6 +50,12 @@ Partial Class MainWnd
     Me.c5 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
     Me.picGen = New System.Windows.Forms.PictureBox()
     Me.chkFull = New System.Windows.Forms.CheckBox()
+    Me.radLineRows = New System.Windows.Forms.RadioButton()
+    Me.radLineCols = New System.Windows.Forms.RadioButton()
+    Me.radLineAll = New System.Windows.Forms.RadioButton()
+    Me.btnLineLess = New System.Windows.Forms.Button()
+    Me.btnLineMore = New System.Windows.Forms.Button()
+    Me.txtLine = New System.Windows.Forms.TextBox()
     CType(Me.picOrig, System.ComponentModel.ISupportInitialize).BeginInit()
     Me.Panel1.SuspendLayout()
     CType(Me.picWork, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -118,7 +124,7 @@ Partial Class MainWnd
     '
     'picTile
     '
-    Me.picTile.Location = New System.Drawing.Point(60, 140)
+    Me.picTile.Location = New System.Drawing.Point(21, 140)
     Me.picTile.Name = "picTile"
     Me.picTile.Size = New System.Drawing.Size(74, 37)
     Me.picTile.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage
@@ -207,6 +213,12 @@ Partial Class MainWnd
     '
     't2
     '
+    Me.t2.Controls.Add(Me.txtLine)
+    Me.t2.Controls.Add(Me.btnLineMore)
+    Me.t2.Controls.Add(Me.btnLineLess)
+    Me.t2.Controls.Add(Me.radLineAll)
+    Me.t2.Controls.Add(Me.radLineCols)
+    Me.t2.Controls.Add(Me.radLineRows)
     Me.t2.Controls.Add(Me.listTiles)
     Me.t2.Controls.Add(Me.picGen)
     Me.t2.Controls.Add(Me.picTile)
@@ -224,9 +236,9 @@ Partial Class MainWnd
     Me.listTiles.FullRowSelect = True
     Me.listTiles.GridLines = True
     Me.listTiles.HideSelection = False
-    Me.listTiles.Location = New System.Drawing.Point(6, 186)
+    Me.listTiles.Location = New System.Drawing.Point(6, 183)
     Me.listTiles.Name = "listTiles"
-    Me.listTiles.Size = New System.Drawing.Size(219, 365)
+    Me.listTiles.Size = New System.Drawing.Size(219, 368)
     Me.listTiles.SmallImageList = Me.ImageList1
     Me.listTiles.TabIndex = 7
     Me.listTiles.UseCompatibleStateImageBehavior = False
@@ -257,7 +269,7 @@ Partial Class MainWnd
     '
     'picGen
     '
-    Me.picGen.Location = New System.Drawing.Point(34, 6)
+    Me.picGen.Location = New System.Drawing.Point(32, 6)
     Me.picGen.Name = "picGen"
     Me.picGen.Size = New System.Drawing.Size(128, 128)
     Me.picGen.TabIndex = 4
@@ -272,6 +284,66 @@ Partial Class MainWnd
     Me.chkFull.TabIndex = 16
     Me.chkFull.Text = "Full"
     Me.chkFull.UseVisualStyleBackColor = True
+    '
+    'radLineRows
+    '
+    Me.radLineRows.AutoSize = True
+    Me.radLineRows.Location = New System.Drawing.Point(172, 40)
+    Me.radLineRows.Name = "radLineRows"
+    Me.radLineRows.Size = New System.Drawing.Size(52, 17)
+    Me.radLineRows.TabIndex = 12
+    Me.radLineRows.TabStop = True
+    Me.radLineRows.Text = "Rows"
+    Me.radLineRows.UseVisualStyleBackColor = True
+    '
+    'radLineCols
+    '
+    Me.radLineCols.AutoSize = True
+    Me.radLineCols.Location = New System.Drawing.Point(172, 63)
+    Me.radLineCols.Name = "radLineCols"
+    Me.radLineCols.Size = New System.Drawing.Size(45, 17)
+    Me.radLineCols.TabIndex = 13
+    Me.radLineCols.TabStop = True
+    Me.radLineCols.Text = "Cols"
+    Me.radLineCols.UseVisualStyleBackColor = True
+    '
+    'radLineAll
+    '
+    Me.radLineAll.AutoSize = True
+    Me.radLineAll.Location = New System.Drawing.Point(172, 17)
+    Me.radLineAll.Name = "radLineAll"
+    Me.radLineAll.Size = New System.Drawing.Size(36, 17)
+    Me.radLineAll.TabIndex = 14
+    Me.radLineAll.TabStop = True
+    Me.radLineAll.Text = "All"
+    Me.radLineAll.UseVisualStyleBackColor = True
+    '
+    'btnLineLess
+    '
+    Me.btnLineLess.Location = New System.Drawing.Point(101, 147)
+    Me.btnLineLess.Name = "btnLineLess"
+    Me.btnLineLess.Size = New System.Drawing.Size(23, 23)
+    Me.btnLineLess.TabIndex = 15
+    Me.btnLineLess.Text = "<"
+    Me.btnLineLess.UseVisualStyleBackColor = True
+    '
+    'btnLineMore
+    '
+    Me.btnLineMore.Location = New System.Drawing.Point(166, 147)
+    Me.btnLineMore.Name = "btnLineMore"
+    Me.btnLineMore.Size = New System.Drawing.Size(23, 23)
+    Me.btnLineMore.TabIndex = 16
+    Me.btnLineMore.Text = ">"
+    Me.btnLineMore.UseVisualStyleBackColor = True
+    '
+    'txtLine
+    '
+    Me.txtLine.Location = New System.Drawing.Point(131, 149)
+    Me.txtLine.Name = "txtLine"
+    Me.txtLine.Size = New System.Drawing.Size(29, 20)
+    Me.txtLine.TabIndex = 17
+    Me.txtLine.Text = "64"
+    Me.txtLine.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
     '
     'MainWnd
     '
@@ -296,6 +368,7 @@ Partial Class MainWnd
     Me.TabControl1.ResumeLayout(False)
     Me.t1.ResumeLayout(False)
     Me.t2.ResumeLayout(False)
+    Me.t2.PerformLayout()
     CType(Me.picGen, System.ComponentModel.ISupportInitialize).EndInit()
     Me.ResumeLayout(False)
     Me.PerformLayout()
@@ -329,4 +402,10 @@ Partial Class MainWnd
   Friend WithEvents cc2 As ColumnHeader
   Friend WithEvents cc3 As ColumnHeader
   Friend WithEvents chkFull As CheckBox
+  Friend WithEvents txtLine As TextBox
+  Friend WithEvents btnLineMore As Button
+  Friend WithEvents btnLineLess As Button
+  Friend WithEvents radLineAll As RadioButton
+  Friend WithEvents radLineCols As RadioButton
+  Friend WithEvents radLineRows As RadioButton
 End Class

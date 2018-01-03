@@ -9,6 +9,12 @@ Public Class Roof
     Best
   End Enum
 
+  Public Enum enumLine
+    Row
+    Column
+    Square
+  End Enum
+
   Private m_Original As Bitmap
   Private m_Mapping As Dictionary(Of Integer, Map)
   Private m_Colors As Dictionary(Of Integer, RFColor)
@@ -81,7 +87,7 @@ Public Class Roof
 
   End Sub
 
-  Public Function DrawGrid(ByVal current As Dictionary(Of Integer, Tile)) As GeneratedBitmaps
+  Public Function DrawGrid(ByVal current As Dictionary(Of Integer, Tile), eLine As enumLine, ByVal nPos As Integer) As GeneratedBitmaps
     Dim bmps As GeneratedBitmaps
     Dim x, y As Integer
     Dim g As Graphics
@@ -89,19 +95,26 @@ Public Class Roof
     Dim blnDraw As Boolean
     Dim c As RFColor
     Dim map As Map
+    Dim font As Font
+    Dim fmt As New StringFormat
+    Dim pen As New Drawing.Pen(Brushes.Red)
+
+    fmt.Alignment = StringAlignment.Center
+    font = New Font("ms sans serif", 11, FontStyle.Regular, GraphicsUnit.Pixel)
 
     bmps = New GeneratedBitmaps
 
-    bmps.Large = New Bitmap(Me.Width * 37, Me.Height * 18, Imaging.PixelFormat.Format24bppRgb)
+    bmps.Large = New Bitmap(Me.Width * 37 + Me.Width + 2, Me.Height * 18 + Me.Height + 2, Imaging.PixelFormat.Format24bppRgb)
     bmps.Small = New Bitmap(Me.Width, Me.Height, Imaging.PixelFormat.Format24bppRgb)
     g = Graphics.FromImage(bmps.Large)
+    g.InterpolationMode = Drawing2D.InterpolationMode.High
 
     For i = 0 To Me.Width - 1
       For k = 0 To Me.Height - 1
         c = New RFColor(m_Original.GetPixel(i, k))
         map = m_Mapping.Item(c.CV)
-        x = i * 37
-        y = k * 18
+        x = i * (37 + 1) + 1
+        y = k * (18 + 1) + 1
         rctOut = New Rectangle(x, y, 37, 18)
         rctIn = New Rectangle(0, 0, 37, 18)
         If current Is Nothing Then
@@ -113,10 +126,90 @@ Public Class Roof
           g.DrawImage(map.Tile.Image, rctOut, rctIn, GraphicsUnit.Pixel)
         Else
           g.DrawImage(m_placeholder, rctOut, rctIn, GraphicsUnit.Pixel)
+          rctIn = New Rectangle(x + 2, y + 2, 37 - 4, 18 - 4)
+          g.DrawString((i + 1) & "/" & (k + 1), font, Brushes.DarkBlue, rctIn, fmt)
         End If
-        bmps.Small.SetPixel(i, k, map.Tile.Color)
+        bmps.Small.SetPixel(i, k, map.Tile.Color.Color)
       Next
     Next
+
+    Select Case eLine
+      Case enumLine.Row
+        g.DrawLine(pen, New Point(0, nPos * (18 + 1)), New Point(bmps.Large.Width, nPos * (18 + 1)))
+        g.DrawLine(pen, New Point(0, (nPos + 1) * (18 + 1)), New Point(bmps.Large.Width, (nPos + 1) * (18 + 1)))
+      Case enumLine.Column
+        g.DrawLine(pen, New Point(nPos * (37 + 1), 0), New Point(nPos * (37 + 1), bmps.Large.Height))
+        g.DrawLine(pen, New Point((nPos + 1) * (37 + 1), 0), New Point((nPos + 1) * (37 + 1), bmps.Large.Height))
+    End Select
+
+    g.Dispose()
+    pen.Dispose()
+
+    Return bmps
+
+  End Function
+
+  Public Function DrawGridx(ByVal current As Dictionary(Of Integer, Tile)) As GeneratedBitmaps
+    Dim bmps As GeneratedBitmaps
+    Dim x, y As Integer
+    Dim g As Graphics
+    Dim rctIn, rctOut As Rectangle
+    Dim blnDraw As Boolean
+    Dim c As RFColor
+    Dim map As Map
+    Dim d As Double = Math.Sqrt(2)
+    Dim bmpTL, bmpTS As Bitmap
+    Dim mat As New Drawing2D.Matrix
+    Dim w, h As Integer
+
+
+    bmps = New GeneratedBitmaps
+
+    bmps.Large = New Bitmap(CInt(Me.Width * 37 * d), CInt(Me.Height * 37 * d), Imaging.PixelFormat.Format24bppRgb)
+    bmps.Small = New Bitmap(CInt(Me.Width * d), CInt(Me.Height * d), Imaging.PixelFormat.Format24bppRgb)
+
+    bmpTL = New Bitmap(Me.Width * 37, Me.Height * 37, Imaging.PixelFormat.Format24bppRgb)
+    bmpTS = New Bitmap(Me.Width * d, Me.Height * d, Imaging.PixelFormat.Format24bppRgb)
+
+    w = bmps.Large.Width
+    h = bmps.Large.Height
+
+    g = Graphics.FromImage(bmpTL)
+
+    For i = 0 To Me.Width - 1
+      For k = 0 To Me.Height - 1
+        c = New RFColor(m_Original.GetPixel(i, k))
+        map = m_Mapping.Item(c.CV)
+        x = i * 37
+        y = k * 37
+        rctOut = New Rectangle(x, y, 37, 37)
+        rctIn = New Rectangle(0, 0, 37, 18)
+        If current Is Nothing Then
+          blnDraw = True
+        Else
+          blnDraw = current.ContainsKey(map.Tile.ID)
+        End If
+        If blnDraw = True Then
+          g.DrawImage(map.Tile.Image, rctOut, rctIn, GraphicsUnit.Pixel)
+        Else
+          g.DrawImage(m_placeholder, rctOut, rctIn, GraphicsUnit.Pixel)
+        End If
+        bmps.Small.SetPixel(i, k, map.Tile.Color.Color)
+      Next
+    Next
+    g.Dispose()
+
+    g = Graphics.FromImage(bmps.Large)
+    g.InterpolationMode = Drawing2D.InterpolationMode.High
+
+    rctIn = New Rectangle(0, 0, bmpTL.Width, bmpTL.Height)
+    rctOut = New Rectangle(CInt(w / 2 - bmpTL.Width / 2), CInt(h / 2 - bmpTL.Height / 2), bmpTL.Width, bmpTL.Height)
+
+    mat.RotateAt(45, New Point(rctOut.Width / 2, rctOut.Height / 2))
+    g.Transform = mat
+    ' g.ScaleTransform(1, 0.4)
+
+    g.DrawImage(bmpTL, rctOut, rctIn, GraphicsUnit.Pixel)
     g.Dispose()
 
     Return bmps

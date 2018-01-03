@@ -7,6 +7,8 @@ Public Class MainWnd
   Private m_Tiles As Dictionary(Of Integer, Tile)
   Private m_Placeholder As Image
   Private m_eMethod As Roof.enumMethod
+  Private m_eLineType As Roof.enumLine
+  Private m_nLinePos As Integer
 
   Private m_ID As Integer
 
@@ -81,7 +83,7 @@ Public Class MainWnd
           rctIn = New Rectangle(0, 0, 37, 18)
           rctOut = New Rectangle(x * 37, y * 18, 37, 18)
           g.DrawImage(m_Tiles.Item(i + 1).Image, rctOut, rctIn, GraphicsUnit.Pixel)
-          br = New SolidBrush(m_Tiles.Item(i + 1).Color)
+          br = New SolidBrush(m_Tiles.Item(i + 1).Color.Color)
           g.FillRectangle(br, New Rectangle(x * 37, (18 * 18 + y * 18) + 10, 37, 18))
           br.Dispose()
           i += 1
@@ -99,6 +101,8 @@ Public Class MainWnd
     m_Placeholder = My.Resources.Placeholder
 
     picGen.SizeMode = PictureBoxSizeMode.StretchImage
+
+    listTiles.ListViewItemSorter = New TileListSorter
 
   End Sub
 
@@ -128,6 +132,11 @@ Public Class MainWnd
 
     txtFile.Text = d.FileName
 
+    m_eLineType = Roof.enumLine.Square
+    radLineAll.Checked = True
+    m_nLinePos = 0
+    txtLine.Text = "1"
+
     m_Roof = New Roof(bmp, m_Placeholder, m_Tiles)
 
     picOrig.Image = m_Roof.Original
@@ -138,10 +147,7 @@ Public Class MainWnd
   End Sub
 
   Private Sub GenerateRoof()
-    Dim i As Integer
     Dim map As Map
-    Dim tile As Tile
-    Dim item As TileItem
     Dim list As New Dictionary(Of Integer, Tile)
 
     If m_Roof Is Nothing Then Return
@@ -151,6 +157,16 @@ Public Class MainWnd
     For Each map In m_Roof.Mapping.Values
       If list.ContainsKey(map.Tile.ID) = False Then list.Add(map.Tile.ID, map.Tile)
     Next
+
+    LoadList(list)
+    DrawGrid()
+
+  End Sub
+
+  Private Sub LoadList(ByVal list As Dictionary(Of Integer, Tile))
+    Dim tile As Tile
+    Dim item As TileItem
+    Dim i As Integer
 
     listTiles.Items.Clear()
 
@@ -167,8 +183,34 @@ Public Class MainWnd
     c3.AutoResize(ColumnHeaderAutoResizeStyle.HeaderSize)
     c4.AutoResize(ColumnHeaderAutoResizeStyle.HeaderSize)
     c5.AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent)
+  End Sub
 
-    DrawGrid()
+
+  Private Sub LoadLineTiles()
+    Dim x, y As Integer
+    Dim c As RFColor
+    Dim map As Map
+    Dim list As Dictionary(Of Integer, Tile)
+
+    If m_eLineType = Roof.enumLine.Square Then Return
+
+    list = New Dictionary(Of Integer, Tile)
+
+    If m_eLineType = Roof.enumLine.Column Then
+      For y = 0 To m_Roof.Height - 1
+        c = New RFColor(m_Roof.Original.GetPixel(m_nLinePos, y))
+        map = m_Roof.Mapping.Item(c.CV)
+        If list.ContainsKey(map.Tile.ID) = False Then list.Add(map.Tile.ID, map.Tile)
+      Next
+    Else
+      For x = 0 To m_Roof.Width - 1
+        c = New RFColor(m_Roof.Original.GetPixel(x, m_nLinePos))
+        map = m_Roof.Mapping.Item(c.CV)
+        If list.ContainsKey(map.Tile.ID) = False Then list.Add(map.Tile.ID, map.Tile)
+      Next
+    End If
+
+    LoadList(list)
 
   End Sub
 
@@ -188,7 +230,7 @@ Public Class MainWnd
       picTile.Image = item.Tile.Image
     End If
 
-    bmps = m_Roof.DrawGrid(current)
+    bmps = m_Roof.DrawGrid(current, m_eLineType, m_nLinePos)
 
     If Not picGen.Image Is Nothing Then picGen.Image.Dispose()
     picGen.Image = bmps.Small
@@ -329,5 +371,88 @@ Public Class MainWnd
 
   End Sub
 
+  Private Sub btnLineLess_Click(sender As Object, e As EventArgs) Handles btnLineLess.Click
+    If m_nLinePos >= 1 Then m_nLinePos -= 1 : txtLine.Text = (m_nLinePos + 1).ToString
+  End Sub
+
+  Private Sub btnLineMore_Click(sender As Object, e As EventArgs) Handles btnLineMore.Click
+    If m_nLinePos < m_Roof.Width - 1 Then m_nLinePos += 1 : txtLine.Text = (m_nLinePos + 1).ToString
+  End Sub
+
+  Private Sub txtLine_TextChanged(sender As Object, e As EventArgs) Handles txtLine.TextChanged
+    Dim n As Integer
+
+    If m_eLineType = Roof.enumLine.Square Then Return
+    If m_Roof Is Nothing Then Return
+
+    If Integer.TryParse(txtLine.Text, n) = True Then
+      If n < 1 Then Return
+      If m_eLineType = Roof.enumLine.Row Then
+        If n > m_Roof.Width Then Return
+      Else
+        If n > m_Roof.Height Then Return
+      End If
+      m_nLinePos = n - 1
+      LoadLineTiles()
+      DrawGrid()
+    End If
+
+  End Sub
+
+  Private Sub radLineAll_Click(sender As Object, e As EventArgs) Handles radLineAll.Click
+    m_eLineType = Roof.enumLine.Square
+    LoadLineTiles()
+    DrawGrid()
+  End Sub
+
+  Private Sub radLineCols_Click(sender As Object, e As EventArgs) Handles radLineCols.Click
+    m_eLineType = Roof.enumLine.Column
+    LoadLineTiles()
+    DrawGrid()
+  End Sub
+
+  Private Sub radLineRows_Click(sender As Object, e As EventArgs) Handles radLineRows.Click
+    m_eLineType = Roof.enumLine.Row
+    LoadLineTiles()
+    DrawGrid()
+  End Sub
+
 End Class
 
+Public Class TileListSorter
+  Implements IComparer
+
+  Public Function Compare(x As Object, y As Object) As Integer Implements IComparer.Compare
+    Dim i1, i2 As ListViewItem
+    Dim r1, r2 As String
+    Dim ri1, ri2, p1, p2, col1, col2 As Integer
+
+    i1 = x
+    i2 = y
+
+    p1 = CInt(i1.SubItems(1).Text)
+    r1 = i1.SubItems(2).Text
+    If r1.ToLower = "top" Then ri1 = 1 Else ri1 = 2
+    col1 = CInt(i1.SubItems(3).Text)
+
+    p2 = CInt(i2.SubItems(1).Text)
+    r2 = i2.SubItems(2).Text
+    If r2.ToLower = "top" Then ri2 = 1 Else ri2 = 2
+    col2 = CInt(i2.SubItems(3).Text)
+
+    If p1 > p2 Then Return 1
+    If p1 < p2 Then Return -1
+
+    If ri1 > ri2 Then Return 1
+    If ri1 < ri2 Then Return -1
+
+    If col1 > col2 Then Return 1
+    If col1 < col2 Then Return -1
+
+    Return 0
+
+  End Function
+
+
+
+End Class
