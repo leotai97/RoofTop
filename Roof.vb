@@ -97,7 +97,7 @@ Public Class Roof
     Dim map As Map
     Dim font As Font
     Dim fmt As New StringFormat
-    Dim pen As New Drawing.Pen(Brushes.Red)
+    Dim pen As New Drawing.Pen(Brushes.Blue, 2)
 
     fmt.Alignment = StringAlignment.Center
     font = New Font("ms sans serif", 11, FontStyle.Regular, GraphicsUnit.Pixel)

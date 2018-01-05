@@ -42,6 +42,12 @@ Partial Class MainWnd
     Me.cc2 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
     Me.cc3 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
     Me.t2 = New System.Windows.Forms.TabPage()
+    Me.txtLine = New System.Windows.Forms.TextBox()
+    Me.btnLineMore = New System.Windows.Forms.Button()
+    Me.btnLineLess = New System.Windows.Forms.Button()
+    Me.radLineAll = New System.Windows.Forms.RadioButton()
+    Me.radLineCols = New System.Windows.Forms.RadioButton()
+    Me.radLineRows = New System.Windows.Forms.RadioButton()
     Me.listTiles = New System.Windows.Forms.ListView()
     Me.c1 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
     Me.c2 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -50,12 +56,6 @@ Partial Class MainWnd
     Me.c5 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
     Me.picGen = New System.Windows.Forms.PictureBox()
     Me.chkFull = New System.Windows.Forms.CheckBox()
-    Me.radLineRows = New System.Windows.Forms.RadioButton()
-    Me.radLineCols = New System.Windows.Forms.RadioButton()
-    Me.radLineAll = New System.Windows.Forms.RadioButton()
-    Me.btnLineLess = New System.Windows.Forms.Button()
-    Me.btnLineMore = New System.Windows.Forms.Button()
-    Me.txtLine = New System.Windows.Forms.TextBox()
     CType(Me.picOrig, System.ComponentModel.ISupportInitialize).BeginInit()
     Me.Panel1.SuspendLayout()
     CType(Me.picWork, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -230,6 +230,66 @@ Partial Class MainWnd
     Me.t2.Text = "Generated"
     Me.t2.UseVisualStyleBackColor = True
     '
+    'txtLine
+    '
+    Me.txtLine.Location = New System.Drawing.Point(131, 149)
+    Me.txtLine.Name = "txtLine"
+    Me.txtLine.Size = New System.Drawing.Size(29, 20)
+    Me.txtLine.TabIndex = 17
+    Me.txtLine.Text = "64"
+    Me.txtLine.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
+    '
+    'btnLineMore
+    '
+    Me.btnLineMore.Location = New System.Drawing.Point(166, 147)
+    Me.btnLineMore.Name = "btnLineMore"
+    Me.btnLineMore.Size = New System.Drawing.Size(23, 23)
+    Me.btnLineMore.TabIndex = 16
+    Me.btnLineMore.Text = ">"
+    Me.btnLineMore.UseVisualStyleBackColor = True
+    '
+    'btnLineLess
+    '
+    Me.btnLineLess.Location = New System.Drawing.Point(101, 147)
+    Me.btnLineLess.Name = "btnLineLess"
+    Me.btnLineLess.Size = New System.Drawing.Size(23, 23)
+    Me.btnLineLess.TabIndex = 15
+    Me.btnLineLess.Text = "<"
+    Me.btnLineLess.UseVisualStyleBackColor = True
+    '
+    'radLineAll
+    '
+    Me.radLineAll.AutoSize = True
+    Me.radLineAll.Location = New System.Drawing.Point(172, 17)
+    Me.radLineAll.Name = "radLineAll"
+    Me.radLineAll.Size = New System.Drawing.Size(36, 17)
+    Me.radLineAll.TabIndex = 14
+    Me.radLineAll.TabStop = True
+    Me.radLineAll.Text = "All"
+    Me.radLineAll.UseVisualStyleBackColor = True
+    '
+    'radLineCols
+    '
+    Me.radLineCols.AutoSize = True
+    Me.radLineCols.Location = New System.Drawing.Point(172, 63)
+    Me.radLineCols.Name = "radLineCols"
+    Me.radLineCols.Size = New System.Drawing.Size(45, 17)
+    Me.radLineCols.TabIndex = 13
+    Me.radLineCols.TabStop = True
+    Me.radLineCols.Text = "Cols"
+    Me.radLineCols.UseVisualStyleBackColor = True
+    '
+    'radLineRows
+    '
+    Me.radLineRows.AutoSize = True
+    Me.radLineRows.Location = New System.Drawing.Point(172, 40)
+    Me.radLineRows.Name = "radLineRows"
+    Me.radLineRows.Size = New System.Drawing.Size(52, 17)
+    Me.radLineRows.TabIndex = 12
+    Me.radLineRows.TabStop = True
+    Me.radLineRows.Text = "Rows"
+    Me.radLineRows.UseVisualStyleBackColor = True
+    '
     'listTiles
     '
     Me.listTiles.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.c1, Me.c2, Me.c3, Me.c4, Me.c5})
@@ -252,6 +312,7 @@ Partial Class MainWnd
     'c2
     '
     Me.c2.Text = "Panel"
+    Me.c2.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
     Me.c2.Width = 52
     '
     'c3
@@ -284,66 +345,6 @@ Partial Class MainWnd
     Me.chkFull.TabIndex = 16
     Me.chkFull.Text = "Full"
     Me.chkFull.UseVisualStyleBackColor = True
-    '
-    'radLineRows
-    '
-    Me.radLineRows.AutoSize = True
-    Me.radLineRows.Location = New System.Drawing.Point(172, 40)
-    Me.radLineRows.Name = "radLineRows"
-    Me.radLineRows.Size = New System.Drawing.Size(52, 17)
-    Me.radLineRows.TabIndex = 12
-    Me.radLineRows.TabStop = True
-    Me.radLineRows.Text = "Rows"
-    Me.radLineRows.UseVisualStyleBackColor = True
-    '
-    'radLineCols
-    '
-    Me.radLineCols.AutoSize = True
-    Me.radLineCols.Location = New System.Drawing.Point(172, 63)
-    Me.radLineCols.Name = "radLineCols"
-    Me.radLineCols.Size = New System.Drawing.Size(45, 17)
-    Me.radLineCols.TabIndex = 13
-    Me.radLineCols.TabStop = True
-    Me.radLineCols.Text = "Cols"
-    Me.radLineCols.UseVisualStyleBackColor = True
-    '
-    'radLineAll
-    '
-    Me.radLineAll.AutoSize = True
-    Me.radLineAll.Location = New System.Drawing.Point(172, 17)
-    Me.radLineAll.Name = "radLineAll"
-    Me.radLineAll.Size = New System.Drawing.Size(36, 17)
-    Me.radLineAll.TabIndex = 14
-    Me.radLineAll.TabStop = True
-    Me.radLineAll.Text = "All"
-    Me.radLineAll.UseVisualStyleBackColor = True
-    '
-    'btnLineLess
-    '
-    Me.btnLineLess.Location = New System.Drawing.Point(101, 147)
-    Me.btnLineLess.Name = "btnLineLess"
-    Me.btnLineLess.Size = New System.Drawing.Size(23, 23)
-    Me.btnLineLess.TabIndex = 15
-    Me.btnLineLess.Text = "<"
-    Me.btnLineLess.UseVisualStyleBackColor = True
-    '
-    'btnLineMore
-    '
-    Me.btnLineMore.Location = New System.Drawing.Point(166, 147)
-    Me.btnLineMore.Name = "btnLineMore"
-    Me.btnLineMore.Size = New System.Drawing.Size(23, 23)
-    Me.btnLineMore.TabIndex = 16
-    Me.btnLineMore.Text = ">"
-    Me.btnLineMore.UseVisualStyleBackColor = True
-    '
-    'txtLine
-    '
-    Me.txtLine.Location = New System.Drawing.Point(131, 149)
-    Me.txtLine.Name = "txtLine"
-    Me.txtLine.Size = New System.Drawing.Size(29, 20)
-    Me.txtLine.TabIndex = 17
-    Me.txtLine.Text = "64"
-    Me.txtLine.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
     '
     'MainWnd
     '
