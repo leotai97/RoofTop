@@ -53,7 +53,6 @@ Partial Class MainWnd
     Me.c2 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
     Me.c3 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
     Me.c4 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-    Me.c5 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
     Me.picGen = New System.Windows.Forms.PictureBox()
     Me.chkFull = New System.Windows.Forms.CheckBox()
     CType(Me.picOrig, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -292,7 +291,7 @@ Partial Class MainWnd
     '
     'listTiles
     '
-    Me.listTiles.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.c1, Me.c2, Me.c3, Me.c4, Me.c5})
+    Me.listTiles.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.c1, Me.c2, Me.c3, Me.c4})
     Me.listTiles.FullRowSelect = True
     Me.listTiles.GridLines = True
     Me.listTiles.HideSelection = False
@@ -323,10 +322,6 @@ Partial Class MainWnd
     'c4
     '
     Me.c4.Text = "Across"
-    '
-    'c5
-    '
-    Me.c5.Text = "Color"
     '
     'picGen
     '
@@ -399,7 +394,6 @@ Partial Class MainWnd
   Friend WithEvents c2 As ColumnHeader
   Friend WithEvents c3 As ColumnHeader
   Friend WithEvents c4 As ColumnHeader
-  Friend WithEvents c5 As ColumnHeader
   Friend WithEvents cc2 As ColumnHeader
   Friend WithEvents cc3 As ColumnHeader
   Friend WithEvents chkFull As CheckBox

@@ -16,7 +16,8 @@ Public Class Roof
   End Enum
 
   Private m_Original As Bitmap
-  Private m_Mapping As Dictionary(Of Integer, Map)
+  Private m_Generated(,) As Tile                              ' without any interface lines added
+  Private m_Mapping As Dictionary(Of Integer, Map)            ' indexed by RFColor.CV
   Private m_Colors As Dictionary(Of Integer, RFColor)
   Private m_placeholder As Bitmap
   Private m_eMethod As enumMethod
@@ -27,7 +28,7 @@ Public Class Roof
     m_placeholder = place
     m_Tiles = tiles
     UniqueColors()
-
+    m_Generated = Nothing
   End Sub
 
   Public ReadOnly Property Original() As Bitmap
@@ -53,6 +54,12 @@ Public Class Roof
     Get
       If m_Original Is Nothing Then Return 0
       Return m_Original.Height
+    End Get
+  End Property
+
+  Public ReadOnly Property Generated() As Tile(,)
+    Get
+      Return m_Generated
     End Get
   End Property
 
@@ -106,6 +113,9 @@ Public Class Roof
 
     bmps.Large = New Bitmap(Me.Width * 37 + Me.Width + 2, Me.Height * 18 + Me.Height + 2, Imaging.PixelFormat.Format24bppRgb)
     bmps.Small = New Bitmap(Me.Width, Me.Height, Imaging.PixelFormat.Format24bppRgb)
+
+    ReDim m_Generated(Me.Width - 1, Me.Height - 1)
+
     g = Graphics.FromImage(bmps.Large)
     g.InterpolationMode = Drawing2D.InterpolationMode.High
 
@@ -130,6 +140,7 @@ Public Class Roof
           g.DrawString((i + 1) & "/" & (k + 1), font, Brushes.DarkBlue, rctIn, fmt)
         End If
         bmps.Small.SetPixel(i, k, map.Tile.Color.Color)
+        m_Generated(i, k) = map.Tile
       Next
     Next
 
@@ -137,15 +148,37 @@ Public Class Roof
       Case enumLine.Row
         g.DrawLine(pen, New Point(0, nPos * (18 + 1)), New Point(bmps.Large.Width, nPos * (18 + 1)))
         g.DrawLine(pen, New Point(0, (nPos + 1) * (18 + 1)), New Point(bmps.Large.Width, (nPos + 1) * (18 + 1)))
+        For i = 0 To Me.Width - 1
+          bmps.Small.SetPixel(i, nPos, Color.Black)
+        Next
       Case enumLine.Column
         g.DrawLine(pen, New Point(nPos * (37 + 1), 0), New Point(nPos * (37 + 1), bmps.Large.Height))
         g.DrawLine(pen, New Point((nPos + 1) * (37 + 1), 0), New Point((nPos + 1) * (37 + 1), bmps.Large.Height))
+        For i = 0 To Me.Height - 1
+          bmps.Small.SetPixel(nPos, i, Color.Black)
+        Next
+
     End Select
 
     g.Dispose()
     pen.Dispose()
 
     Return bmps
+
+  End Function
+
+  ''' <summary>
+  ''' take a point from the large roof output and convert to the small bitmap coords for tile lookup
+  ''' </summary>
+  ''' <param name="ix"></param>
+  ''' <param name="iy"></param>
+  ''' <returns></returns>
+  Public Function ConvertRoofCoords(ByVal ix As Integer, ByVal iy As Integer) As Point
+    Dim x, y As Integer
+
+    x = ix \ (37 + 1)   ' note: no rounding division using "\"
+    y = iy \ (18 + 1)
+    Return New Point(x, y)
 
   End Function
 

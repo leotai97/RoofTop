@@ -5,10 +5,11 @@ Public Class MainWnd
   Private m_Panels As List(Of TilePanel)
   Private m_Roof As Roof
   Private m_Tiles As Dictionary(Of Integer, Tile)
-  Private m_Placeholder As Image
-  Private m_eMethod As Roof.enumMethod
-  Private m_eLineType As Roof.enumLine
-  Private m_nLinePos As Integer
+  Private m_Placeholder As Image             ' for grid drawing no tile
+  Private m_eMethod As Roof.enumMethod       ' dark, light, or best 
+  Private m_eLineType As Roof.enumLine       ' for row/column or full setting
+  Private m_nLinePos As Integer              ' for row/column option position
+  Private m_pointLast As Point               ' for mouse click lookup tile
 
   Private m_ID As Integer
 
@@ -182,7 +183,7 @@ Public Class MainWnd
     c2.AutoResize(ColumnHeaderAutoResizeStyle.HeaderSize)
     c3.AutoResize(ColumnHeaderAutoResizeStyle.HeaderSize)
     c4.AutoResize(ColumnHeaderAutoResizeStyle.HeaderSize)
-    c5.AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent)
+    '  c5.AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent)
   End Sub
 
 
@@ -415,6 +416,42 @@ Public Class MainWnd
     m_eLineType = Roof.enumLine.Row
     LoadLineTiles()
     DrawGrid()
+  End Sub
+
+  Private Sub picwork_MouseDown(sender As Object, e As MouseEventArgs) Handles picWork.MouseDown
+
+    If m_Roof Is Nothing Then Return
+    m_pointLast = m_Roof.ConvertRoofCoords(e.X, e.Y)
+
+  End Sub
+
+
+  Private Sub picwork_MouseUp(sender As Object, e As MouseEventArgs) Handles picWork.MouseUp
+    Dim pt As Point
+    '  Dim c As RFColor
+    Dim item As TileItem
+    Dim tile As Tile
+    Dim i As Integer
+
+    If m_Roof Is Nothing Then Return
+    If m_Roof.Generated Is Nothing Then Return  ' image not selected yet
+
+    pt = m_Roof.ConvertRoofCoords(e.X, e.Y)
+    If m_pointLast.X <> pt.X Or m_pointLast.Y <> pt.Y Then Return  ' allow user to cancel tile lookup click by moving mouse before releasing button
+
+    tile = m_Roof.Generated(pt.X, pt.Y)
+    For Each item In listTiles.Items
+      If item.Tile.ID = tile.ID Then
+        listTiles.SelectedItems.Clear()
+        listTiles.SelectedIndices.Add(i)
+        Return
+      End If
+      i += 1
+    Next
+
+    MsgBox("Selected area not found in current list of tiles. Area is probably outside of current column / row.", MsgBoxStyle.Information)
+
+
   End Sub
 
 End Class
