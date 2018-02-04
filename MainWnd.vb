@@ -10,6 +10,7 @@ Public Class MainWnd
   Private m_eLineType As Roof.enumLine       ' for row/column or full setting
   Private m_nLinePos As Integer              ' for row/column option position
   Private m_pointLast As Point               ' for mouse click lookup tile
+  Private m_nLastPanel As Integer            ' so we can show what the previous panel was
 
   Private m_ID As Integer
 
@@ -105,6 +106,8 @@ Public Class MainWnd
 
     listTiles.ListViewItemSorter = New TileListSorter
 
+    lblCurrent.Text = ""
+
   End Sub
 
   Private Sub btnBrowse_Click(sender As Object, e As EventArgs) Handles btnBrowse.Click
@@ -137,11 +140,15 @@ Public Class MainWnd
     radLineAll.Checked = True
     m_nLinePos = 0
     txtLine.Text = "1"
+    lblPrev.Text = ""
+    m_nLastPanel = 0
 
     m_Roof = New Roof(bmp, m_Placeholder, m_Tiles)
 
     picOrig.Image = m_Roof.Original
     picOrig.SizeMode = PictureBoxSizeMode.StretchImage
+
+    TabControl1.SelectTab(1)
 
     GenerateRoof()
 
@@ -193,6 +200,7 @@ Public Class MainWnd
     Dim map As Map
     Dim list As Dictionary(Of Integer, Tile)
 
+    If m_Roof Is Nothing Then Return
     If m_eLineType = Roof.enumLine.Square Then Return
 
     list = New Dictionary(Of Integer, Tile)
@@ -220,6 +228,8 @@ Public Class MainWnd
     Dim bmps As GeneratedBitmaps
     Dim item As TileItem
 
+    If m_Roof Is Nothing Then Return
+
     If listTiles.SelectedItems.Count = 0 Then
       current = Nothing
     Else
@@ -229,9 +239,12 @@ Public Class MainWnd
       Next
       item = listTiles.SelectedItems(0)
       picTile.Image = item.Tile.Image
+      lblCurrent.Text = item.Tile.ToString
+      If m_nLastPanel > 0 Then lblPrev.Text = "P" & m_nLastPanel
+      m_nLastPanel = item.Tile.Panel.PanelNumber
     End If
 
-    bmps = m_Roof.DrawGrid(current, m_eLineType, m_nLinePos)
+    bmps = m_Roof.DrawGrid(current, m_eLineType, m_nLinePos, chkHide.Checked)
 
     If Not picGen.Image Is Nothing Then picGen.Image.Dispose()
     picGen.Image = bmps.Small
@@ -340,6 +353,11 @@ Public Class MainWnd
 
   Private Sub radNearest_Click(sender As Object, e As EventArgs) Handles radNearest.Click
     m_eMethod = Roof.enumMethod.Best
+    GenerateRoof()
+  End Sub
+
+  Private Sub radHSL_Click(sender As Object, e As EventArgs) Handles radHSL.Click
+    m_eMethod = Roof.enumMethod.HSL
     GenerateRoof()
   End Sub
 
@@ -452,6 +470,11 @@ Public Class MainWnd
     MsgBox("Selected area not found in current list of tiles. Area is probably outside of current column / row.", MsgBoxStyle.Information)
 
 
+  End Sub
+
+  Private Sub chkHide_CheckedChanged(sender As Object, e As EventArgs) Handles chkHide.CheckedChanged
+    LoadLineTiles()
+    DrawGrid()
   End Sub
 
 End Class

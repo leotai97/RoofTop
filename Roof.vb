@@ -7,6 +7,7 @@ Public Class Roof
     Darker
     Lighter
     Best
+    HSL
   End Enum
 
   Public Enum enumLine
@@ -94,7 +95,7 @@ Public Class Roof
 
   End Sub
 
-  Public Function DrawGrid(ByVal current As Dictionary(Of Integer, Tile), eLine As enumLine, ByVal nPos As Integer) As GeneratedBitmaps
+  Public Function DrawGrid(ByVal current As Dictionary(Of Integer, Tile), eLine As enumLine, ByVal nPos As Integer, ByVal blnHide As Boolean) As GeneratedBitmaps
     Dim bmps As GeneratedBitmaps
     Dim x, y As Integer
     Dim g As Graphics
@@ -131,6 +132,10 @@ Public Class Roof
           blnDraw = True
         Else
           blnDraw = current.ContainsKey(map.Tile.ID)
+        End If
+        If blnHide = True Then
+          If eLine = enumLine.Column And nPos <> i Then blnDraw = False '  only show the single column of tiles as to not confuse
+          If eLine = enumLine.Row And nPos <> i Then blnDraw = False    '  only show row ....
         End If
         If blnDraw = True Then
           g.DrawImage(map.Tile.Image, rctOut, rctIn, GraphicsUnit.Pixel)
@@ -182,74 +187,6 @@ Public Class Roof
 
   End Function
 
-  Public Function DrawGridx(ByVal current As Dictionary(Of Integer, Tile)) As GeneratedBitmaps
-    Dim bmps As GeneratedBitmaps
-    Dim x, y As Integer
-    Dim g As Graphics
-    Dim rctIn, rctOut As Rectangle
-    Dim blnDraw As Boolean
-    Dim c As RFColor
-    Dim map As Map
-    Dim d As Double = Math.Sqrt(2)
-    Dim bmpTL, bmpTS As Bitmap
-    Dim mat As New Drawing2D.Matrix
-    Dim w, h As Integer
-
-
-    bmps = New GeneratedBitmaps
-
-    bmps.Large = New Bitmap(CInt(Me.Width * 37 * d), CInt(Me.Height * 37 * d), Imaging.PixelFormat.Format24bppRgb)
-    bmps.Small = New Bitmap(CInt(Me.Width * d), CInt(Me.Height * d), Imaging.PixelFormat.Format24bppRgb)
-
-    bmpTL = New Bitmap(Me.Width * 37, Me.Height * 37, Imaging.PixelFormat.Format24bppRgb)
-    bmpTS = New Bitmap(Me.Width * d, Me.Height * d, Imaging.PixelFormat.Format24bppRgb)
-
-    w = bmps.Large.Width
-    h = bmps.Large.Height
-
-    g = Graphics.FromImage(bmpTL)
-
-    For i = 0 To Me.Width - 1
-      For k = 0 To Me.Height - 1
-        c = New RFColor(m_Original.GetPixel(i, k))
-        map = m_Mapping.Item(c.CV)
-        x = i * 37
-        y = k * 37
-        rctOut = New Rectangle(x, y, 37, 37)
-        rctIn = New Rectangle(0, 0, 37, 18)
-        If current Is Nothing Then
-          blnDraw = True
-        Else
-          blnDraw = current.ContainsKey(map.Tile.ID)
-        End If
-        If blnDraw = True Then
-          g.DrawImage(map.Tile.Image, rctOut, rctIn, GraphicsUnit.Pixel)
-        Else
-          g.DrawImage(m_placeholder, rctOut, rctIn, GraphicsUnit.Pixel)
-        End If
-        bmps.Small.SetPixel(i, k, map.Tile.Color.Color)
-      Next
-    Next
-    g.Dispose()
-
-    g = Graphics.FromImage(bmps.Large)
-    g.InterpolationMode = Drawing2D.InterpolationMode.High
-
-    rctIn = New Rectangle(0, 0, bmpTL.Width, bmpTL.Height)
-    rctOut = New Rectangle(CInt(w / 2 - bmpTL.Width / 2), CInt(h / 2 - bmpTL.Height / 2), bmpTL.Width, bmpTL.Height)
-
-    mat.RotateAt(45, New Point(rctOut.Width / 2, rctOut.Height / 2))
-    g.Transform = mat
-    ' g.ScaleTransform(1, 0.4)
-
-    g.DrawImage(bmpTL, rctOut, rctIn, GraphicsUnit.Pixel)
-    g.Dispose()
-
-    Return bmps
-
-  End Function
-
-
   Private Function GetBestTile(ByVal c As RFColor) As Tile
     Dim best As Tile
 
@@ -263,6 +200,12 @@ Public Class Roof
 
     If m_eMethod = enumMethod.Lighter Then
       best = Lighter(c)
+      If Not best Is Nothing Then Return best
+      Return Nearest(c)
+    End If
+
+    If m_eMethod = enumMethod.HSL Then
+      best = TryHSL(c)
       If Not best Is Nothing Then Return best
       Return Nearest(c)
     End If
@@ -350,6 +293,7 @@ Public Class Roof
     Dim br, bg, bb As Integer
     Dim ar, ag, ab As Integer
 
+
     br = 512
     bg = 512
     bb = 512
@@ -362,18 +306,58 @@ Public Class Roof
       ag = Math.Abs(tile.Color.G - c.G)
       ab = Math.Abs(tile.Color.B - c.B)
 
-      If ar <= br And ag <= bg And ab <= bb Then
-        best = tile
-        br = ar
-        bg = ag
-        bb = ab
+      If tile.Color.Dominate <> RFColor.enumDominate.None Then ' only look for the dominate color, ignore others
+        Select Case tile.Color.Dominate
+          Case RFColor.enumDominate.Red
+            If ar <= br And tile.Color.G < RFColor.Low And tile.Color.B < RFColor.Low Then
+              best = tile
+              br = ar
+            End If
+          Case RFColor.enumDominate.Green
+            If ag <= bg And tile.Color.R < RFColor.Low And tile.Color.B < RFColor.Low Then
+              best = tile
+              bg = ag
+            End If
+          Case RFColor.enumDominate.Blue
+            If ab <= bb And tile.Color.R < RFColor.Low And tile.Color.G < RFColor.Low Then
+              best = tile
+              bb = ab
+            End If
+        End Select
+      Else
+        If ar <= br And ag <= bg And ab <= bb Then ' look for color match using all RGB channels
+          best = tile
+          br = ar
+          bg = ag
+          bb = ab
+        End If
       End If
-
     Next
     Return best
 
   End Function
 
+  Private Function TryHSL(ByVal c As RFColor)
+    Dim list As New List(Of Tile)
+    Dim t, best As Tile
+    Dim best_d, d As Double
+
+    best = Nothing
+    d = Double.MaxValue
+
+    For Each t In m_Tiles.Values
+      d = c.Modulus - t.Color.Modulus
+      If d >= 0 Then
+        If d < best_d Then
+          best = t
+          best_d = d
+        End If
+      End If
+    Next
+
+    Return best
+
+  End Function
 
 #Region "IDisposable Support"
   Private disposedValue As Boolean ' To detect redundant calls
@@ -421,52 +405,6 @@ Public Class Map
 
 End Class
 
-Public Class RFColor
-  Public R As Integer
-  Public G As Integer
-  Public B As Integer
-
-  Private m_cv As Integer
-
-  Private m_Sum As Integer
-
-  Public Sub New(ByVal c As Color)
-
-    Me.R = c.R
-    Me.G = c.G
-    Me.B = c.B
-
-    m_cv = (Me.R << 16) Or (Me.G << 8) Or B
-    m_Sum = Me.R + Me.G + Me.B
-
-  End Sub
-
-  Public Sub New(ByVal rv As Integer, gv As Integer, bv As Integer)
-    Me.R = rv
-    Me.G = gv
-    Me.B = bv
-    m_Sum = Me.R + Me.G + Me.B
-  End Sub
-
-  Public ReadOnly Property Sum() As Integer
-    Get
-      Return m_Sum
-    End Get
-  End Property
-
-  Public ReadOnly Property Color() As Color
-    Get
-      Return Color.FromArgb(R, G, B)
-    End Get
-  End Property
-
-  Public ReadOnly Property CV() As Integer
-    Get
-      Return m_cv
-    End Get
-  End Property
-
-End Class
 
 Public Class GeneratedBitmaps
   Public Small As Bitmap

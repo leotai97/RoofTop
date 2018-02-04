@@ -1,4 +1,5 @@
 ﻿Public Class Tile
+  Implements IComparable
 
   Private m_Image As Bitmap
   Private m_Color As RFColor
@@ -84,6 +85,34 @@
       Return m_ID
     End Get
   End Property
+
+  Public Overrides Function ToString() As String
+    Dim s As String
+    Dim r As String
+
+    If Me.m_posY = 0 Then r = "Top" Else r = "Bot"
+
+    s = "P" & Me.Panel.PanelNumber & "  " & r & " " & Me.m_PosX + 1
+    Return s
+
+  End Function
+
+  Public Function CompareTo(objin As Object) As Integer Implements IComparable.CompareTo
+    Dim objT As Tile = objin
+    Dim obj As RFColor = objT.Color
+
+    If obj.R > Me.Color.R Then Return 1
+    If obj.R < Me.Color.R Then Return -1
+
+    If obj.G > Me.Color.G Then Return 1
+    If obj.G < Me.Color.G Then Return -1
+
+    If obj.B > Me.Color.B Then Return 1
+    If obj.B < Me.Color.B Then Return -1
+
+    Return 0
+
+  End Function
 
 End Class
 

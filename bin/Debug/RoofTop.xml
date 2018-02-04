@@ -93,6 +93,12 @@ RoofTop
  </summary>
  <returns></returns>
 </member>
+<member name="P:RoofTop.RFColor.Dominate">
+ <summary>
+ Check for a dominate color
+ </summary>
+ <returns></returns>
+</member>
 <member name="M:RoofTop.Roof.ConvertRoofCoords(System.Int32,System.Int32)">
  <summary>
  take a point from the large roof output and convert to the small bitmap coords for tile lookup

@@ -1,0 +1,25 @@
+RoofTop
+
+Hover over each control in the program to see hints.  Be sure to try out step #7 to make sure your orientation is correct.
+
+1. create a bitmap (.bmp) image 24 bit. Can't be greater than 64 width or height.
+
+2. Run the program and open the bitmap with the browse button.  The Process button allows you to open a pasted or typed in  file name.
+
+3. There are 3 color match algorithms you can choose from, favor "darker" colors, favor "lighter" colors, or attempt "nearest" match. Try each one to see which works best with your picture.
+
+4. The "Original" tab contains the original picture that was opened with browse and a list of every possible tile and the averaged color value computed for the tile, the tiles are sorted from darker averaged colors to lighter colors.
+
+5. The "Generated" tab contains a sample of what the rooftop will look like and a list of all of the tiles selected to take part in the roof.  This tab also contains 3 options.  "All", "Rows", and "Cols".
+ 
+  "All" mode allows you to see the entire roof array. You can limit which tiles are shown by selecting one or more tiles in the list below the options.  I really recommend the "Cols" mode is used to draw a roof, I've used this mode successfully on 2 rooftops.
+  
+  "Rows" and "Cols" mode limits the tile array to just one column or row.  Select tiles in the list below the options to limit which tiles are shown in the tile array.  Use the arrow buttons at the top left of the screen to move the current row or column.  You can also type a specific column or row number in the text box between the arrows.  Use the check box "Hide Others" to force the tile array only to show tiles for the current row and column. Hide is turned on by default.
+
+6. Click on each tile in the "Generated" list to see where it should be used in the roof top.
+
+The tile array will show the row / col numbers on any cell that that does not contain a tile. By using the row or cols option with hide you can easily see the column and row nummbers where a tile should be placed by looking at the cells next to the tile.
+
+You can click on any un-occupied cell in the array to have the program look up which tile should be there. If the tile isn't in the list the program will issue a warning. It works best to click on a tile of the current row or column.
+
+7. There is a test pattern bitmap in the bin/release folder called "Cols_Mode_Pattern.bmp".  Download the .bmp and open it with the program.  Change the color comparison mode to "Darker".  Use the program to draw the red, green, and blue squares on each corner of your property roof top then view your property on description screen to insure that the "Green" square is located at the top, if it is not then you must change your view using rotate left / rotate right buttons and try again until the green square appears at the top. When the green square appears on the top you are ready to begin painting your roof.
