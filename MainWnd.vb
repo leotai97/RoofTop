@@ -54,7 +54,7 @@ Public Class MainWnd
     m_Panels.Add(New TilePanel(9, 20, Me, My.Resources.panel9))
     m_Panels.Add(New TilePanel(10, 20, Me, My.Resources.panel10))
     m_Panels.Add(New TilePanel(11, 20, Me, My.Resources.panel11))
-    m_Panels.Add(New TilePanel(12, 12, Me, My.Resources.panel12))
+    m_Panels.Add(New TilePanel(12, 11, Me, My.Resources.Panel12))
 
     m_Tiles = New Dictionary(Of Integer, Tile)
     For Each panel In m_Panels

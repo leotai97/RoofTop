@@ -163,5 +163,41 @@
   <ItemGroup>
     <None Include="Tiles\panel12.bmp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="TilesNew\Panel1.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="TilesNew\Panel2.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="TilesNew\Panel3.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="TilesNew\Panel4.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="TilesNew\Panel5.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="TilesNew\Panel6.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="TilesNew\Panel7.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="TilesNew\Panel8.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="TilesNew\Panel9.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="TilesNew\Panel10.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="TilesNew\Panel11.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="TilesNew\Panel12.bmp" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>

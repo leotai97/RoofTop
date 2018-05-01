@@ -22,62 +22,62 @@ RoofTop
   resource lookups using this strongly typed resource class.
 </summary>
 </member>
-<member name="P:RoofTop.My.Resources.Resources.panel1">
+<member name="P:RoofTop.My.Resources.Resources.Panel1">
 <summary>
   Looks up a localized resource of type System.Drawing.Bitmap.
 </summary>
 </member>
-<member name="P:RoofTop.My.Resources.Resources.panel10">
+<member name="P:RoofTop.My.Resources.Resources.Panel10">
 <summary>
   Looks up a localized resource of type System.Drawing.Bitmap.
 </summary>
 </member>
-<member name="P:RoofTop.My.Resources.Resources.panel11">
+<member name="P:RoofTop.My.Resources.Resources.Panel11">
 <summary>
   Looks up a localized resource of type System.Drawing.Bitmap.
 </summary>
 </member>
-<member name="P:RoofTop.My.Resources.Resources.panel12">
+<member name="P:RoofTop.My.Resources.Resources.Panel12">
 <summary>
   Looks up a localized resource of type System.Drawing.Bitmap.
 </summary>
 </member>
-<member name="P:RoofTop.My.Resources.Resources.panel2">
+<member name="P:RoofTop.My.Resources.Resources.Panel2">
 <summary>
   Looks up a localized resource of type System.Drawing.Bitmap.
 </summary>
 </member>
-<member name="P:RoofTop.My.Resources.Resources.panel3">
+<member name="P:RoofTop.My.Resources.Resources.Panel3">
 <summary>
   Looks up a localized resource of type System.Drawing.Bitmap.
 </summary>
 </member>
-<member name="P:RoofTop.My.Resources.Resources.panel4">
+<member name="P:RoofTop.My.Resources.Resources.Panel4">
 <summary>
   Looks up a localized resource of type System.Drawing.Bitmap.
 </summary>
 </member>
-<member name="P:RoofTop.My.Resources.Resources.panel5">
+<member name="P:RoofTop.My.Resources.Resources.Panel5">
 <summary>
   Looks up a localized resource of type System.Drawing.Bitmap.
 </summary>
 </member>
-<member name="P:RoofTop.My.Resources.Resources.panel6">
+<member name="P:RoofTop.My.Resources.Resources.Panel6">
 <summary>
   Looks up a localized resource of type System.Drawing.Bitmap.
 </summary>
 </member>
-<member name="P:RoofTop.My.Resources.Resources.panel7">
+<member name="P:RoofTop.My.Resources.Resources.Panel7">
 <summary>
   Looks up a localized resource of type System.Drawing.Bitmap.
 </summary>
 </member>
-<member name="P:RoofTop.My.Resources.Resources.panel8">
+<member name="P:RoofTop.My.Resources.Resources.Panel8">
 <summary>
   Looks up a localized resource of type System.Drawing.Bitmap.
 </summary>
 </member>
-<member name="P:RoofTop.My.Resources.Resources.panel9">
+<member name="P:RoofTop.My.Resources.Resources.Panel9">
 <summary>
   Looks up a localized resource of type System.Drawing.Bitmap.
 </summary>
