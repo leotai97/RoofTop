@@ -1,4 +1,4 @@
-RoofTop
+RoofTop (Note: fixed "Row" bug that was causing it not to draw the row)
 
 Program is located at
 
@@ -35,3 +35,5 @@ You can click on any un-occupied cell in the array to have the program look up w
 7. There is a test pattern bitmap in the bin/release folder called "Cols_Mode_Pattern.bmp".  Download the .bmp and open it with the program.  Change the color comparison mode to "Darker".  Use the program to draw the red, green, and blue squares on each corner of your property roof top then view your property on description screen to insure that the "Green" square is located at the top, if it is not then you must change your view using rotate left / rotate right buttons and try again until the green square appears at the top. When the green square appears on the top you are ready to begin painting your roof.
 
   The Cols_Mode_Pattern.Bmp contains lines across at positions 10, 20, 30, 40, 50, and 60.  Green on even #s and red on odd #s. If placed on your roof these stripes help you see where to put the tiles, erase them as you go.
+
+8. I had to replace the use of the blacktop tile with the white line, it rendered white on the roof instead of the average color of black.
